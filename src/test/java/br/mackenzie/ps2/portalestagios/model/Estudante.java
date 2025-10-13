@@ -7,11 +7,13 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
+
 public class Estudante {
     @Id @GeneratedValue
     private Long id;
