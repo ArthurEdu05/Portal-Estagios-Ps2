@@ -4,6 +4,7 @@ package br.mackenzie.ps2.portalestagios.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@ToString
+
 public class VagaEstagio {
 
 @Id @GeneratedValue
