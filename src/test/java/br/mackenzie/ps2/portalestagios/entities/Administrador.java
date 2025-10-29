@@ -1,25 +1,18 @@
-package br.mackenzie.ps2.portalestagios.model;
-
+package br.mackenzie.ps2.portalestagios.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.ToString;
 
-
-@Getter
-@Setter
+@Data
 @Entity
 @ToString
-
-public class Empresa {
-
+public class Administrador {
     @Id @GeneratedValue
     private Long id;
     private String nome;
-    private String cnpj;
     private String email;
 
 }

@@ -1,16 +1,14 @@
-package br.mackenzie.ps2.portalestagios.model;
+package br.mackenzie.ps2.portalestagios.entities;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.ToString;
 
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Entity
 @ToString
 
