@@ -18,7 +18,7 @@ public class Inscricao {
 @Id @GeneratedValue
 private long id;
 private Date dataInscricao;
-private int status;
+private String status;
 private VagaEstagio vagaEstagio;
 private List<Estudante> estudantes;
 }

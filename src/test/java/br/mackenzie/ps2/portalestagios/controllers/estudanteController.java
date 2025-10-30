@@ -53,6 +53,7 @@ public class estudanteController {
             newEstudante.setCpf(newData.getCpf());
             newEstudante.setEmail(newData.getEmail());
             newEstudante.setListAreaInteresse(newData.getListAreaInteresse());
+            return estudanteRep.save(newEstudante);
         }
 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
