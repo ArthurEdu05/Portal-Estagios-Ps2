@@ -10,6 +10,7 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "vagas_estagios")
 @ToString
 
 public class VagaEstagio {
@@ -18,8 +19,14 @@ public class VagaEstagio {
     private long id;
     private String titulo;
     private String descricao;
+
+    @Column(name = "data_inicio")
     private Date dataInicio;
+    
+    @Column(name = "data_fim")
     private Date dataFim;
+
+    @ManyToMany
     private List<AreaInteresse> listAreaInteresse;
 
     @ManyToOne

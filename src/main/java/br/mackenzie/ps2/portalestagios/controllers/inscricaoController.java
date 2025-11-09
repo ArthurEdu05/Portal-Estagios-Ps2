@@ -29,8 +29,8 @@ public class inscricaoController {
     //CREATE
     @PostMapping("/inscricao")
     public Inscricao createInscricao(@RequestBody Inscricao newInscricao){
-        if(newInscricao.getDataInscricao() == null || newInscricao.getStatus() == null || newInscricao.getVagaEstagio() == null || newInscricao.getEstudantes() == null
-        || newInscricao.getStatus().isEmpty() || newInscricao.getEstudantes().isEmpty()){
+        if(newInscricao.getDataInscricao() == null || newInscricao.getStatus() == null || newInscricao.getVagaEstagio() == null || newInscricao.getEstudante() == null
+        || newInscricao.getStatus().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return inscricaoRep.save(newInscricao);
@@ -49,7 +49,7 @@ public class inscricaoController {
             newInscricao.setDataInscricao(newData.getDataInscricao());
             newInscricao.setStatus(newData.getStatus());
             newInscricao.setVagaEstagio(newData.getVagaEstagio());
-            newInscricao.setEstudantes(newData.getEstudantes());
+            newInscricao.setEstudante(newData.getEstudante());
             return inscricaoRep.save(newInscricao);
         }
 
