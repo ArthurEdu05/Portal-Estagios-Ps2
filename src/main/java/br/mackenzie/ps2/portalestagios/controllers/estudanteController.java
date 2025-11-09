@@ -29,8 +29,7 @@ public class estudanteController {
     //CREATE
     @PostMapping("/estudante")
     public Estudante createEstudante(@RequestBody Estudante newEstudante){
-        if(newEstudante.getNome() == null || newEstudante.getCpf() == null || newEstudante.getEmail() == null || newEstudante.getListAreaInteresse() == null
-        || newEstudante.getNome().isEmpty() || newEstudante.getCpf().isEmpty() || newEstudante.getEmail().isEmpty() || newEstudante.getListAreaInteresse().isEmpty()){
+        if(newEstudante.getNome() == null || newEstudante.getCpf() == null || newEstudante.getEmail() == null || newEstudante.getNome().isEmpty() || newEstudante.getCpf().isEmpty() || newEstudante.getEmail().isEmpty()){
             
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
