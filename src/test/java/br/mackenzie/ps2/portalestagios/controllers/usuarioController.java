@@ -1,70 +1,33 @@
-package br.mackenzie.ps2.portalestagios.controllers;
+package br.mackenzie.ps2.portalestagios.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 
-import br.mackenzie.ps2.portalestagios.entities.Usuario;
-import br.mackenzie.ps2.portalestagios.repository.usuarioRepository;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public abstract class Usuario {
 
-@RestController
-public class usuarioController {
-    @Autowired
-    private usuarioRepository usuarioRep;
-    List<Usuario> lstUsuarios = new ArrayList<>();
-    //CRUD - USUARIO
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    //CREATE
-    @PostMapping("/usuario")
-    public Usuario createUsuario(@RequestBody Usuario newUsuario){
-        if(newUsuario.getLogin() == null || newUsuario.getSenha() == null 
-        || newUsuario.getLogin().isEmpty() || newUsuario.getSenha().isEmpty()){
+    @Column(nullable = false, unique = true)
+    private String login;
 
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return usuarioRep.save(newUsuario);
-    }
+    @Column(nullable = false)
+    private String senha;
 
-    //READ
-    @GetMapping("/usuario")
-    public List<Usuario> getAllUsuarios(){
-        return usuarioRep.findAll();
-    }
+    @Column(nullable = false)
+    private String tipoUsuario; //AQUI NOS FALAMOS O TIPO DE USUARIO
 
-    //UPDATE
-    @PutMapping("/usuario/{id}")
-    public Usuario updateUsuarioById(@RequestBody Usuario newData, @PathVariable Long id){
-        Optional<Usuario> optional = usuarioRep.findById(id);
-        if(optional.isPresent()){
-            Usuario newUsuario = optional.get();
-            newUsuario.setLogin(newData.getLogin());
-            newUsuario.setSenha(newData.getSenha());
-            return usuarioRep.save(newUsuario);
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-    }
-    //DELETE
-    @DeleteMapping("/usuario/{id}")
-    public Usuario deleteUsuarioById(@PathVariable Long id){
-        Optional<Usuario> optional = usuarioRep.findById(id);
-        if(optional.isPresent()){
-            Usuario del = optional.get();
-            usuarioRep.deleteById(id);
-            return del;
-
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-    }
-
+    // AQUI DEFINIMOS PERMISSÕES DE CADA!
+    public abstract boolean podeAcessarVagas();
+    public abstract boolean podeCriarVagas();
+    public abstract boolean podeGerenciarUsuarios();
 }
