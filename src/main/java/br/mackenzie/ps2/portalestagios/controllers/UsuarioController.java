@@ -1,4 +1,4 @@
-package br.mackenzie.ps2.portalestagios.entities;
+package br.mackenzie.ps2.portalestagios.controllers;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class Usuario {
+public abstract class UsuarioController {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
