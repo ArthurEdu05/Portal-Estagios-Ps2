@@ -32,8 +32,8 @@ public class administradorController {
     //CREATE
     @PostMapping("/admin")
     public Administrador createAdministrador(@RequestBody Administrador newAdministrador){
-        if(newAdministrador.getNome() == null || newAdministrador.getEmail() == null ||
-        newAdministrador.getNome().isEmpty() || newAdministrador.getEmail().isEmpty()){
+        if(newAdministrador.getNome() == null || newAdministrador.getEmail() == null || newAdministrador.getSenha() == null ||
+        newAdministrador.getNome().isEmpty() || newAdministrador.getEmail().isEmpty() || newAdministrador.getSenha().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return admRep.save(newAdministrador);
