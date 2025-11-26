@@ -27,20 +27,19 @@ public class empresaController {
     private empresaRepository empresaRep;
     List<Empresa> lstEmpresas = new ArrayList<>();
 
-    //CRUD - EMPRESA
-
     //CREATE
     @PostMapping("/empresa")
     public Empresa createEmpresa(@RequestBody Empresa newEmpresa){
-        if(newEmpresa.getNome() == null || newEmpresa.getCnpj() == null || newEmpresa.getEmail() == null 
-        || newEmpresa.getNome().isEmpty() || newEmpresa.getCnpj().isEmpty() || newEmpresa.getEmail().isEmpty()){
-            
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        
-        }
+        if(newEmpresa.getNome() == null || newEmpresa.getCnpj() == null ||
+                newEmpresa.getEmail() == null || newEmpresa.getSenha() == null ||
+                newEmpresa.getNome().isEmpty() || newEmpresa.getCnpj().isEmpty() ||
+                newEmpresa.getEmail().isEmpty() || newEmpresa.getSenha().isEmpty()){
 
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         return empresaRep.save(newEmpresa);
     }
+
     //READ
     @GetMapping("/empresa")
     public List<Empresa> getAllEmpresas(){
@@ -56,11 +55,12 @@ public class empresaController {
             newEmpresa.setNome(newData.getNome());
             newEmpresa.setCnpj(newData.getCnpj());
             newEmpresa.setEmail(newData.getEmail());
+            if(newData.getSenha() != null && !newData.getSenha().isEmpty()) {
+                newEmpresa.setSenha(newData.getSenha());
+            }
             return empresaRep.save(newEmpresa);
         }
-
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
     }
 
     //DELETE
@@ -72,8 +72,6 @@ public class empresaController {
             empresaRep.deleteById(id);
             return del;
         }
-
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
     }
 }

@@ -1,6 +1,5 @@
 package br.mackenzie.ps2.portalestagios.entities;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,7 +11,6 @@ import lombok.ToString;
 @Entity
 @Table(name = "empresas")
 @ToString
-
 public class Empresa {
 
     @Id @GeneratedValue
@@ -20,5 +18,5 @@ public class Empresa {
     private String nome;
     private String cnpj;
     private String email;
-
+    private String senha; // NOVO CAMPO
 }

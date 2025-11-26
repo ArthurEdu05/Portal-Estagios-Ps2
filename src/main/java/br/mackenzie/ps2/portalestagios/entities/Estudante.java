@@ -1,6 +1,5 @@
 package br.mackenzie.ps2.portalestagios.entities;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -15,13 +14,14 @@ import java.util.List;
 @Entity
 @Table(name = "estudantes")
 @ToString
-
 public class Estudante {
     @Id @GeneratedValue
     private Long id;
     private String nome;
     private String cpf;
     private String email;
+    private String senha; // NOVO CAMPO
+
     @ManyToMany
     private List<AreaInteresse> listAreaInteresse;
 }

@@ -26,13 +26,14 @@ public class estudanteController {
     private estudanteRepository estudanteRep;
     List<Estudante> lstEstudantes = new ArrayList<>();
 
-    //CRUD - ESTUDANTE
-
     //CREATE
     @PostMapping("/estudante")
     public Estudante createEstudante(@RequestBody Estudante newEstudante){
-        if(newEstudante.getNome() == null || newEstudante.getCpf() == null || newEstudante.getEmail() == null || newEstudante.getNome().isEmpty() || newEstudante.getCpf().isEmpty() || newEstudante.getEmail().isEmpty()){
-            
+        if(newEstudante.getNome() == null || newEstudante.getCpf() == null ||
+                newEstudante.getEmail() == null || newEstudante.getSenha() == null ||
+                newEstudante.getNome().isEmpty() || newEstudante.getCpf().isEmpty() ||
+                newEstudante.getEmail().isEmpty() || newEstudante.getSenha().isEmpty()){
+
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return estudanteRep.save(newEstudante);
@@ -53,13 +54,15 @@ public class estudanteController {
             newEstudante.setNome(newData.getNome());
             newEstudante.setCpf(newData.getCpf());
             newEstudante.setEmail(newData.getEmail());
+            if(newData.getSenha() != null && !newData.getSenha().isEmpty()) {
+                newEstudante.setSenha(newData.getSenha());
+            }
             newEstudante.setListAreaInteresse(newData.getListAreaInteresse());
             return estudanteRep.save(newEstudante);
         }
-
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
     }
+
     //DELETE
     @DeleteMapping("/estudante/{id}")
     public Estudante deleteEstudanteById(@PathVariable Long id){
@@ -69,8 +72,6 @@ public class estudanteController {
             estudanteRep.deleteById(id);
             return del;
         }
-
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
     }
 }
