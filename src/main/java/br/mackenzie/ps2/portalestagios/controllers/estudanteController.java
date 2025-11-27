@@ -26,35 +26,44 @@ public class estudanteController {
     private estudanteRepository estudanteRep;
     List<Estudante> lstEstudantes = new ArrayList<>();
 
-    //CREATE
+    // CREATE
     @PostMapping("/estudante")
-    public Estudante createEstudante(@RequestBody Estudante newEstudante){
-        if(newEstudante.getNome() == null || newEstudante.getCpf() == null ||
+    public Estudante createEstudante(@RequestBody Estudante newEstudante) {
+        if (newEstudante.getNome() == null || newEstudante.getCpf() == null ||
                 newEstudante.getEmail() == null || newEstudante.getSenha() == null ||
                 newEstudante.getNome().isEmpty() || newEstudante.getCpf().isEmpty() ||
-                newEstudante.getEmail().isEmpty() || newEstudante.getSenha().isEmpty()){
+                newEstudante.getEmail().isEmpty() || newEstudante.getSenha().isEmpty()) {
 
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return estudanteRep.save(newEstudante);
     }
 
-    //READ
+    // READ
     @GetMapping("/estudante")
-    public List<Estudante> getAllEstudantes(){
+    public List<Estudante> getAllEstudantes() {
         return estudanteRep.findAll();
     }
 
-    //UPDATE
-    @PutMapping("/estudante/{id}")
-    public Estudante updateEstudanteById(@RequestBody Estudante newData, @PathVariable Long id){
+    @GetMapping("/estudante/{id}")
+    public Estudante getEstudanteById(@PathVariable Long id) {
         Optional<Estudante> optional = estudanteRep.findById(id);
-        if(optional.isPresent()){
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante não encontrado");
+    }
+
+    // UPDATE
+    @PutMapping("/estudante/{id}")
+    public Estudante updateEstudanteById(@RequestBody Estudante newData, @PathVariable Long id) {
+        Optional<Estudante> optional = estudanteRep.findById(id);
+        if (optional.isPresent()) {
             Estudante newEstudante = optional.get();
             newEstudante.setNome(newData.getNome());
             newEstudante.setCpf(newData.getCpf());
             newEstudante.setEmail(newData.getEmail());
-            if(newData.getSenha() != null && !newData.getSenha().isEmpty()) {
+            if (newData.getSenha() != null && !newData.getSenha().isEmpty()) {
                 newEstudante.setSenha(newData.getSenha());
             }
             newEstudante.setListAreaInteresse(newData.getListAreaInteresse());
@@ -63,11 +72,11 @@ public class estudanteController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
-    //DELETE
+    // DELETE
     @DeleteMapping("/estudante/{id}")
-    public Estudante deleteEstudanteById(@PathVariable Long id){
+    public Estudante deleteEstudanteById(@PathVariable Long id) {
         Optional<Estudante> optional = estudanteRep.findById(id);
-        if(optional.isPresent()){
+        if (optional.isPresent()) {
             Estudante del = optional.get();
             estudanteRep.deleteById(id);
             return del;
