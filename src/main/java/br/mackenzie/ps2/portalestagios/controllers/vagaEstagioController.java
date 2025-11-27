@@ -35,7 +35,8 @@ public class vagaEstagioController {
                 newVagaEstagio.getModalidade() == null || newVagaEstagio.getCargaHoraria() == null ||
                 newVagaEstagio.getCargaHoraria().isEmpty() || newVagaEstagio.getRequisitos() == null ||
                 newVagaEstagio.getRequisitos().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Todos os campos obrigatórios devem ser preenchidos");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Todos os campos obrigatórios devem ser preenchidos");
         }
         newVagaEstagio.setStatus(VagaEstagio.StatusVaga.ABERTA);
         return vagaEstagioRep.save(newVagaEstagio);
@@ -71,6 +72,17 @@ public class vagaEstagioController {
         if (optional.isPresent()) {
             VagaEstagio vaga = optional.get();
             vaga.setStatus(VagaEstagio.StatusVaga.FECHADA);
+            return vagaEstagioRep.save(vaga);
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrada");
+    }
+
+    @PutMapping("/vagaEstagio/{id}/reabrir")
+    public VagaEstagio reabrirVaga(@PathVariable Long id) {
+        Optional<VagaEstagio> optional = vagaEstagioRep.findById(id);
+        if (optional.isPresent()) {
+            VagaEstagio vaga = optional.get();
+            vaga.setStatus(VagaEstagio.StatusVaga.ABERTA);
             return vagaEstagioRep.save(vaga);
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrada");
