@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.mackenzie.ps2.portalestagios.entities.VagaEstagio;
+
 import br.mackenzie.ps2.portalestagios.repository.vagaEstagioRepository;
 
 @RestController
@@ -24,46 +25,63 @@ public class vagaEstagioController {
     @Autowired
     private vagaEstagioRepository vagaEstagioRep;
 
-    //CRUD - VAGA DE ESTAGIO
-
-    //CREATE
     @PostMapping("/vagaEstagio")
-    public VagaEstagio createVagaEstagio(@RequestBody VagaEstagio newVagaEstagio){
-        if(newVagaEstagio.getTitulo() == null || newVagaEstagio.getDescricao() == null || newVagaEstagio.getDataInicio() == null || newVagaEstagio.getDataFim() == null || newVagaEstagio.getListAreaInteresse() == null
-        || newVagaEstagio.getTitulo().isEmpty() || newVagaEstagio.getDescricao().isEmpty() || newVagaEstagio.getListAreaInteresse().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    public VagaEstagio createVagaEstagio(@RequestBody VagaEstagio newVagaEstagio) {
+        if (newVagaEstagio.getTitulo() == null || newVagaEstagio.getDescricao() == null ||
+                newVagaEstagio.getDataInicio() == null || newVagaEstagio.getDataFim() == null ||
+                newVagaEstagio.getListAreaInteresse() == null || newVagaEstagio.getTitulo().isEmpty() ||
+                newVagaEstagio.getDescricao().isEmpty() || newVagaEstagio.getListAreaInteresse().isEmpty() ||
+                newVagaEstagio.getLocalizacao() == null || newVagaEstagio.getLocalizacao().isEmpty() ||
+                newVagaEstagio.getModalidade() == null || newVagaEstagio.getCargaHoraria() == null ||
+                newVagaEstagio.getCargaHoraria().isEmpty() || newVagaEstagio.getRequisitos() == null ||
+                newVagaEstagio.getRequisitos().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Todos os campos obrigatórios devem ser preenchidos");
         }
+        newVagaEstagio.setStatus(VagaEstagio.StatusVaga.ABERTA);
         return vagaEstagioRep.save(newVagaEstagio);
     }
-    //READ
+
     @GetMapping("/vagaEstagio")
-    public List<VagaEstagio> getAllVagasEstagios(){
+    public List<VagaEstagio> getAllVagasEstagios() {
         return vagaEstagioRep.findAll();
     }
-    //UPDATE
+
     @PutMapping("/vagaEstagio/{id}")
-    public VagaEstagio updateVagaEstagioById(@RequestBody VagaEstagio newData, @PathVariable Long id){
+    public VagaEstagio updateVagaEstagioById(@RequestBody VagaEstagio newData, @PathVariable Long id) {
         Optional<VagaEstagio> optional = vagaEstagioRep.findById(id);
-        if(optional.isPresent()){
-            VagaEstagio newVagaEstagio = optional.get();
-            newVagaEstagio.setTitulo(newData.getTitulo());
-            newVagaEstagio.setDescricao(newData.getDescricao());
-            newVagaEstagio.setDataInicio(newData.getDataInicio());
-            newVagaEstagio.setDataFim(newData.getDataFim());
-            newVagaEstagio.setListAreaInteresse(newData.getListAreaInteresse());
-            return vagaEstagioRep.save(newVagaEstagio);
+        if (optional.isPresent()) {
+            VagaEstagio vagaExistente = optional.get();
+            vagaExistente.setTitulo(newData.getTitulo());
+            vagaExistente.setDescricao(newData.getDescricao());
+            vagaExistente.setDataInicio(newData.getDataInicio());
+            vagaExistente.setDataFim(newData.getDataFim());
+            vagaExistente.setListAreaInteresse(newData.getListAreaInteresse());
+            vagaExistente.setLocalizacao(newData.getLocalizacao());
+            vagaExistente.setModalidade(newData.getModalidade());
+            vagaExistente.setCargaHoraria(newData.getCargaHoraria());
+            vagaExistente.setRequisitos(newData.getRequisitos());
+            return vagaEstagioRep.save(vagaExistente);
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
-    //DELETE
-    @DeleteMapping("/vagaEstagio/{id}")
-    public VagaEstagio deleteVagaEstagioById(@PathVariable Long id){
+
+    @PutMapping("/vagaEstagio/{id}/encerrar")
+    public VagaEstagio encerrarVaga(@PathVariable Long id) {
         Optional<VagaEstagio> optional = vagaEstagioRep.findById(id);
-        if(optional.isPresent()){
-            VagaEstagio del = optional.get();
-            vagaEstagioRep.deleteById(id);
-            return del;
+        if (optional.isPresent()) {
+            VagaEstagio vaga = optional.get();
+            vaga.setStatus(VagaEstagio.StatusVaga.FECHADA);
+            return vagaEstagioRep.save(vaga);
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrada");
+    }
+
+    @DeleteMapping("/vagaEstagio/{id}")
+    public void deleteVagaEstagioById(@PathVariable Long id) {
+        if (vagaEstagioRep.existsById(id)) {
+            vagaEstagioRep.deleteById(id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 }
