@@ -18,15 +18,25 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.mackenzie.ps2.portalestagios.entities.VagaEstagio;
-
 import br.mackenzie.ps2.portalestagios.repository.vagaEstagioRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = "*")
+@Tag(name = "Vagas de Estágio", description = "Endpoints para gerenciar as vagas de estágio")
 public class vagaEstagioController {
     @Autowired
     private vagaEstagioRepository vagaEstagioRep;
 
+    @Operation(summary = "Cria uma nova vaga de estágio", description = "Cria uma nova vaga com os dados fornecidos. O status da vaga (ABERTA/FECHADA) é definido com base na data de início.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Vaga criada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Requisição inválida. Verifique os campos obrigatórios.", content = @Content)
+    })
     @PostMapping("/vagaEstagio")
     public VagaEstagio createVagaEstagio(@RequestBody VagaEstagio newVagaEstagio) {
         if (newVagaEstagio.getTitulo() == null || newVagaEstagio.getDescricao() == null ||
@@ -63,11 +73,20 @@ public class vagaEstagioController {
         return vagaEstagioRep.save(newVagaEstagio);
     }
 
+    @Operation(summary = "Lista todas as vagas de estágio", description = "Retorna uma lista com todas as vagas de estágio cadastradas no sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de vagas retornada com sucesso")
+    })
     @GetMapping("/vagaEstagio")
     public List<VagaEstagio> getAllVagasEstagios() {
         return vagaEstagioRep.findAll();
     }
 
+    @Operation(summary = "Atualiza uma vaga de estágio", description = "Atualiza os dados de uma vaga de estágio existente com base no ID fornecido.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Vaga atualizada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Vaga não encontrada para o ID fornecido", content = @Content)
+    })
     @PutMapping("/vagaEstagio/{id}")
     public VagaEstagio updateVagaEstagioById(@RequestBody VagaEstagio newData, @PathVariable Long id) {
         Optional<VagaEstagio> optional = vagaEstagioRep.findById(id);
@@ -87,6 +106,11 @@ public class vagaEstagioController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
+    @Operation(summary = "Encerra uma vaga", description = "Altera o status de uma vaga para 'FECHADA' com base no ID fornecido.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Vaga encerrada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Vaga não encontrada para o ID fornecido", content = @Content)
+    })
     @PutMapping("/vagaEstagio/{id}/encerrar")
     public VagaEstagio encerrarVaga(@PathVariable Long id) {
         Optional<VagaEstagio> optional = vagaEstagioRep.findById(id);
@@ -98,6 +122,11 @@ public class vagaEstagioController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrada");
     }
 
+    @Operation(summary = "Reabre uma vaga", description = "Altera o status de uma vaga para 'ABERTA' com base no ID fornecido.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Vaga reaberta com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Vaga não encontrada para o ID fornecido", content = @Content)
+    })
     @PutMapping("/vagaEstagio/{id}/reabrir")
     public VagaEstagio reabrirVaga(@PathVariable Long id) {
         Optional<VagaEstagio> optional = vagaEstagioRep.findById(id);
@@ -109,6 +138,11 @@ public class vagaEstagioController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrada");
     }
 
+    @Operation(summary = "Exclui uma vaga de estágio", description = "Exclui permanentemente uma vaga de estágio com base no ID fornecido.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Vaga excluída com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Vaga não encontrada para o ID fornecido", content = @Content)
+    })
     @DeleteMapping("/vagaEstagio/{id}")
     public void deleteVagaEstagioById(@PathVariable Long id) {
         if (vagaEstagioRep.existsById(id)) {

@@ -1,6 +1,5 @@
 package br.mackenzie.ps2.portalestagios.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,16 +17,25 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.mackenzie.ps2.portalestagios.entities.Empresa;
 import br.mackenzie.ps2.portalestagios.repository.empresaRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = "*")
+@Tag(name = "Empresas", description = "Endpoints para o gerenciamento de empresas parceiras")
 public class empresaController {
 
     @Autowired
     private empresaRepository empresaRep;
-    List<Empresa> lstEmpresas = new ArrayList<>();
 
-    //CREATE
+    @Operation(summary = "Cria uma nova empresa", description = "Cria o cadastro de uma nova empresa. Todos os campos são obrigatórios.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Empresa criada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Requisição inválida. Verifique os campos obrigatórios.")
+    })
     @PostMapping("/empresa")
     public Empresa createEmpresa(@RequestBody Empresa newEmpresa){
         if(newEmpresa.getNome() == null || newEmpresa.getCnpj() == null ||
@@ -35,18 +43,25 @@ public class empresaController {
                 newEmpresa.getNome().isEmpty() || newEmpresa.getCnpj().isEmpty() ||
                 newEmpresa.getEmail().isEmpty() || newEmpresa.getSenha().isEmpty()){
 
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Todos os campos são obrigatórios");
         }
         return empresaRep.save(newEmpresa);
     }
 
-    //READ
+    @Operation(summary = "Lista todas as empresas", description = "Retorna uma lista com todas as empresas cadastradas.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de empresas retornada com sucesso")
+    })
     @GetMapping("/empresa")
     public List<Empresa> getAllEmpresas(){
         return empresaRep.findAll();
     }
 
-    //UPDATE
+    @Operation(summary = "Atualiza uma empresa", description = "Atualiza os dados de uma empresa existente com base no ID. A senha só é atualizada se for fornecida.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Empresa atualizada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Empresa não encontrada para o ID fornecido", content = @Content)
+    })
     @PutMapping("/empresa/{id}")
     public Empresa updateEmpresaById(@RequestBody Empresa newData, @PathVariable Long id){
         Optional<Empresa> optional = empresaRep.findById(id);
@@ -60,10 +75,14 @@ public class empresaController {
             }
             return empresaRep.save(newEmpresa);
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
     }
 
-    //DELETE
+    @Operation(summary = "Exclui uma empresa", description = "Exclui permanentemente o cadastro de uma empresa com base no ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Empresa excluída com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Empresa não encontrada para o ID fornecido", content = @Content)
+    })
     @DeleteMapping("/empresa/{id}")
     public Empresa deleteEmpresaById(@PathVariable Long id){
         Optional<Empresa> optional = empresaRep.findById(id);
@@ -72,6 +91,6 @@ public class empresaController {
             empresaRep.deleteById(id);
             return del;
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
     }
 }

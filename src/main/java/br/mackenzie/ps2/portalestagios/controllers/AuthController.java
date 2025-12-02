@@ -14,6 +14,12 @@ import br.mackenzie.ps2.portalestagios.dto.LoginRequest;
 import br.mackenzie.ps2.portalestagios.entities.Estudante;
 import br.mackenzie.ps2.portalestagios.entities.Empresa;
 import br.mackenzie.ps2.portalestagios.services.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,15 +29,18 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
+@Tag(name = "Autenticação", description = "Endpoints para autenticação de usuários (Estudantes, Empresas e Administradores)")
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
-    /**
-     * Endpoint unificado de login (frontend usa este)
-     * POST /api/auth/login
-     */
+    @Operation(summary = "Login unificado para todos os tipos de usuário", description = "Autentica um usuário (Estudante, Empresa ou Admin) com base no e-mail e senha e retorna os dados do usuário com um token de acesso.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login bem-sucedido", content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"id\": 1, \"login\": \"user@example.com\", \"nome\": \"Nome do Usuário\", \"tipo\": \"ESTUDANTE\", \"token\": \"mock-token-uuid\"}"))),
+        @ApiResponse(responseCode = "400", description = "Email e senha são obrigatórios", content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"sucesso\": false, \"mensagem\": \"Email e senha são obrigatórios\"}"))),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas", content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"sucesso\": false, \"mensagem\": \"Email ou senha inválidos\"}")))
+    })
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest) {
 
@@ -96,6 +105,11 @@ public class AuthController {
                 .body(criarResposta(false, "Email ou senha inválidos", null, null, null));
     }
 
+    @Operation(summary = "Login exclusivo para estudantes (depreciado)", description = "Use o endpoint `/api/auth/login` unificado. Autentica um estudante e retorna seus dados com um token.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    })
     @PostMapping("/login/estudante")
     public ResponseEntity<Map<String, Object>> loginEstudante(@RequestBody LoginRequest loginRequest) {
 
@@ -119,6 +133,11 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Login exclusivo para empresas (depreciado)", description = "Use o endpoint `/api/auth/login` unificado. Autentica uma empresa e retorna seus dados com um token.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    })
     @PostMapping("/login/empresa")
     public ResponseEntity<Map<String, Object>> loginEmpresa(@RequestBody LoginRequest loginRequest) {
 

@@ -1,6 +1,5 @@
 package br.mackenzie.ps2.portalestagios.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,15 +17,24 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.mackenzie.ps2.portalestagios.repository.estudanteRepository;
 import br.mackenzie.ps2.portalestagios.entities.Estudante;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = "*")
+@Tag(name = "Estudantes", description = "Endpoints para o gerenciamento de estudantes")
 public class estudanteController {
     @Autowired
     private estudanteRepository estudanteRep;
-    List<Estudante> lstEstudantes = new ArrayList<>();
 
-    // CREATE
+    @Operation(summary = "Cria um novo estudante", description = "Cria o cadastro de um novo estudante. Todos os campos são obrigatórios.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Estudante criado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Requisição inválida. Verifique os campos obrigatórios.")
+    })
     @PostMapping("/estudante")
     public Estudante createEstudante(@RequestBody Estudante newEstudante) {
         if (newEstudante.getNome() == null || newEstudante.getCpf() == null ||
@@ -34,17 +42,25 @@ public class estudanteController {
                 newEstudante.getNome().isEmpty() || newEstudante.getCpf().isEmpty() ||
                 newEstudante.getEmail().isEmpty() || newEstudante.getSenha().isEmpty()) {
 
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Todos os campos são obrigatórios");
         }
         return estudanteRep.save(newEstudante);
     }
 
-    // READ
+    @Operation(summary = "Lista todos os estudantes", description = "Retorna uma lista com todos os estudantes cadastrados.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de estudantes retornada com sucesso")
+    })
     @GetMapping("/estudante")
     public List<Estudante> getAllEstudantes() {
         return estudanteRep.findAll();
     }
 
+    @Operation(summary = "Busca um estudante por ID", description = "Retorna os dados de um estudante específico com base no seu ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Estudante encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Estudante não encontrado para o ID fornecido", content = @Content)
+    })
     @GetMapping("/estudante/{id}")
     public Estudante getEstudanteById(@PathVariable Long id) {
         Optional<Estudante> optional = estudanteRep.findById(id);
@@ -54,7 +70,11 @@ public class estudanteController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante não encontrado");
     }
 
-    // UPDATE
+    @Operation(summary = "Atualiza um estudante", description = "Atualiza os dados de um estudante existente com base no ID. A senha só é atualizada se for fornecida.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Estudante atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Estudante não encontrado para o ID fornecido", content = @Content)
+    })
     @PutMapping("/estudante/{id}")
     public Estudante updateEstudanteById(@RequestBody Estudante newData, @PathVariable Long id) {
         Optional<Estudante> optional = estudanteRep.findById(id);
@@ -69,10 +89,14 @@ public class estudanteController {
             newEstudante.setListAreaInteresse(newData.getListAreaInteresse());
             return estudanteRep.save(newEstudante);
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante não encontrado");
     }
 
-    // DELETE
+    @Operation(summary = "Exclui um estudante", description = "Exclui permanentemente o cadastro de um estudante com base no ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Estudante excluído com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Estudante não encontrado para o ID fornecido", content = @Content)
+    })
     @DeleteMapping("/estudante/{id}")
     public Estudante deleteEstudanteById(@PathVariable Long id) {
         Optional<Estudante> optional = estudanteRep.findById(id);
@@ -81,6 +105,6 @@ public class estudanteController {
             estudanteRep.deleteById(id);
             return del;
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante não encontrado");
     }
 }

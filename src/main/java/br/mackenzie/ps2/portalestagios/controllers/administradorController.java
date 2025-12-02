@@ -18,34 +18,48 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.mackenzie.ps2.portalestagios.entities.Administrador;
 import br.mackenzie.ps2.portalestagios.repository.administradorRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = "*")
+@Tag(name = "Administradores", description = "Endpoints para administradores do sistema")
 public class administradorController {
 
     @Autowired
     private administradorRepository admRep;
-    List<Administrador> lstAdm = new ArrayList<>();
 
-    //CRUD - ADM
-
-    //CREATE
+    @Operation(summary = "Cria um novo administrador", description = "Cria um novo administrador com nome, email e senha.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Administrador criado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Requisição inválida. Nome, email e senha são obrigatórios.")
+    })
     @PostMapping("/admin")
     public Administrador createAdministrador(@RequestBody Administrador newAdministrador){
         if(newAdministrador.getNome() == null || newAdministrador.getEmail() == null || newAdministrador.getSenha() == null ||
         newAdministrador.getNome().isEmpty() || newAdministrador.getEmail().isEmpty() || newAdministrador.getSenha().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome, email e senha são obrigatórios");
         }
         return admRep.save(newAdministrador);
     }
 
-    //READ
+    @Operation(summary = "Lista todos os administradores", description = "Retorna uma lista com todos os administradores cadastrados.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de administradores retornada com sucesso")
+    })
     @GetMapping("/admin")
     public List<Administrador> getAllAdministradores(){
         return admRep.findAll();
     }
 
-    //UPDATE
+    @Operation(summary = "Atualiza um administrador", description = "Atualiza o nome e o email de um administrador existente com base no ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Administrador atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Administrador não encontrado para o ID fornecido", content = @Content)
+    })
     @PutMapping("/admin/{id}")
     public Administrador updateAdministradorById(@RequestBody Administrador newData, @PathVariable Long id){
         Optional<Administrador> optional = admRep.findById(id);
@@ -55,11 +69,15 @@ public class administradorController {
             newAdm.setEmail(newData.getEmail());
             return admRep.save(newAdm);
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Administrador não encontrado");
 
     }
 
-    //DELETE
+    @Operation(summary = "Exclui um administrador", description = "Exclui permanentemente um administrador com base no ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Administrador excluído com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Administrador não encontrado para o ID fornecido", content = @Content)
+    })
     @DeleteMapping("/admin/{id}")
     public Administrador deleteAdministradorById(@PathVariable Long id){
         Optional<Administrador> optional = admRep.findById(id);
@@ -68,6 +86,6 @@ public class administradorController {
             admRep.deleteById(id);
             return del;
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Administrador não encontrado");
     }
 }
