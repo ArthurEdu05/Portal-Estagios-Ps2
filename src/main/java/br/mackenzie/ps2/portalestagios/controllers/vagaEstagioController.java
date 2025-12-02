@@ -1,5 +1,7 @@
 package br.mackenzie.ps2.portalestagios.controllers;
 
+import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +40,26 @@ public class vagaEstagioController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Todos os campos obrigatórios devem ser preenchidos");
         }
-        newVagaEstagio.setStatus(VagaEstagio.StatusVaga.ABERTA);
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        Date currentDate = today.getTime();
+
+        Calendar vagaInicioCal = Calendar.getInstance();
+        vagaInicioCal.setTime(newVagaEstagio.getDataInicio());
+        vagaInicioCal.set(Calendar.HOUR_OF_DAY, 0);
+        vagaInicioCal.set(Calendar.MINUTE, 0);
+        vagaInicioCal.set(Calendar.SECOND, 0);
+        vagaInicioCal.set(Calendar.MILLISECOND, 0);
+        Date vagaInicioDate = vagaInicioCal.getTime();
+
+        if (vagaInicioDate.after(currentDate)) {
+            newVagaEstagio.setStatus(VagaEstagio.StatusVaga.FECHADA); 
+        } else {
+            newVagaEstagio.setStatus(VagaEstagio.StatusVaga.ABERTA); 
+        }
         return vagaEstagioRep.save(newVagaEstagio);
     }
 
