@@ -5,6 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * DTO (Data Transfer Object) para encapsular os dados de requisição de login de um usuário
+ *
+ * Esta classe é utilizada para receber as credenciais (e-mail e senha) enviadas pelo cliente
+ * durante o processo de autenticação. Ela desacopla a estrutura de entrada da API
+ * da entidade interna de {@code Usuario}, garantindo que apenas os dados necessários
+ * para o login sejam transferidos e processados.
+ *
+ * Os campos {@code email} e {@code senha} são as credenciais esperadas.
+ */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,6 +28,19 @@ public class LoginRequest {
     private String senha;
 }
 
+
+/**
+ * DTO para encapsular a resposta da operação de login (não está sendo utilizado ativamente como tipo de retorno ou objeto criado explicitamente nos controllers ou services atualmente. 
+ * É um DTO planejado para futuras implementações de resposta da API
+ *
+ * Esta classe é utilizada para padronizar a saída da API após uma tentativa de login,
+ * informando ao cliente o resultado da operação de forma clara e estruturada.
+ * Isso inclui se o login foi bem-sucedido, uma mensagem descritiva, o tipo de usuário
+ * autenticado e os dados relevantes do usuário, se aplicável
+ *
+ * Os campos {@code sucesso}, {@code mensagem}, {@code tipo} e {@code dados}
+ * fornecem um feedback completo sobre a autenticação
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

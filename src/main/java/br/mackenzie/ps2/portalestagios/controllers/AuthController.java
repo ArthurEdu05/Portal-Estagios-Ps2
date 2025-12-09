@@ -26,6 +26,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Controlador REST responsável por gerenciar as requisições de autenticação na API.
+ *
+ * Esta classe expõe os endpoints para login de diferentes perfis de usuário
+ * (Estudante, Empresa e Administrador). Ela atua como a interface entre as requisições HTTP
+ * do cliente e a lógica de negócio de autenticação, delegando as validações de credenciais
+ * para o {@link AuthService}.
+ *
+ * Utiliza o DTO {@link LoginRequest} para receber as credenciais e
+ * retorna {@code ResponseEntity} com os dados do usuário autenticado e um token,
+ * ou mensagens de erro apropriadas.
+ */
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
@@ -35,6 +48,19 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    /**
+     * Endpoint unificado para login de todos os tipos de usuário (Estudante, Empresa, Administrador).
+     *
+     * Recebe as credenciais de login e tenta autenticar o usuário sequencialmente
+     * como estudante, depois como empresa e, por fim, como administrador.
+     * Retorna os dados do usuário autenticado junto com um token de acesso mockado.
+     *
+     * @param loginRequest Objeto {@link LoginRequest} contendo o e-mail e a senha do usuário.
+     * @return {@code ResponseEntity} contendo um mapa com os dados do usuário (id, login, nome, tipo, token)
+     *         e o status HTTP 200 (OK) em caso de sucesso.
+     *         Retorna 400 (Bad Request) se e-mail ou senha forem inválidos ou vazios,
+     *         ou 401 (Unauthorized) se as credenciais não corresponderem a nenhum usuário.
+     */
     @Operation(summary = "Login unificado para todos os tipos de usuário", description = "Autentica um usuário (Estudante, Empresa ou Admin) com base no e-mail e senha e retorna os dados do usuário com um token de acesso.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login bem-sucedido", content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"id\": 1, \"login\": \"user@example.com\", \"nome\": \"Nome do Usuário\", \"tipo\": \"ESTUDANTE\", \"token\": \"mock-token-uuid\"}"))),
@@ -105,6 +131,18 @@ public class AuthController {
                 .body(criarResposta(false, "Email ou senha inválidos", null, null, null));
     }
 
+    /**
+     * Endpoint para login exclusivo de estudantes.
+     *
+     * Autentica um estudante usando o e-mail e senha.
+     * Retorna os dados do estudante autenticado com um token de acesso mockado.
+     *
+     * @param loginRequest Objeto {@link LoginRequest} contendo o e-mail e a senha do estudante.
+     * @return {@code ResponseEntity} contendo um mapa com o status da operação, mensagem, tipo,
+     *         dados do estudante e um token, e o status HTTP 200 (OK) em caso de sucesso.
+     *         Retorna 400 (Bad Request) se e-mail ou senha forem inválidos ou vazios,
+     *         ou 401 (Unauthorized) se as credenciais não forem válidas.
+     */
     @Operation(summary = "Login exclusivo para estudantes (depreciado)", description = "Use o endpoint `/api/auth/login` unificado. Autentica um estudante e retorna seus dados com um token.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
@@ -133,6 +171,8 @@ public class AuthController {
         }
     }
 
+
+    //Endpoint para login exclusivo de empresas.
     @Operation(summary = "Login exclusivo para empresas (depreciado)", description = "Use o endpoint `/api/auth/login` unificado. Autentica uma empresa e retorna seus dados com um token.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
@@ -161,6 +201,17 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método auxiliar privado para criar um mapa de resposta padronizado.
+     * Usado principalmente pelos endpoints de login depreciados.
+     *
+     * @param sucesso Indica se a operação foi bem-sucedida.
+     * @param mensagem Uma mensagem descritiva do resultado.
+     * @param tipo O tipo de usuário autenticado (ESTUDANTE, EMPRESA, ADMIN), se aplicável.
+     * @param dados Os dados do objeto autenticado, se houver.
+     * @param token O token de acesso gerado, se houver.
+     * @return Um {@code Map<String, Object>} formatado como resposta da API.
+     */
     private Map<String, Object> criarResposta(boolean sucesso, String mensagem, String tipo, Object dados,
             String token) {
         Map<String, Object> resposta = new HashMap<>();
