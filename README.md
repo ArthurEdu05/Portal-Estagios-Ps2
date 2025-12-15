@@ -24,7 +24,7 @@ A API fornece endpoints para suportar todas as funcionalidades exigidas pelos pa
 
 A API está documentada com **Springdoc (Swagger UI)**. Após iniciar a aplicação, a documentação interativa fica disponível para consulta e teste de todos os encontros.
 
--   **URL da Documentação:** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+-   **URL da Documentação (projeto deve estar rodando):** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 ## Tecnologias Utilizadas
 
